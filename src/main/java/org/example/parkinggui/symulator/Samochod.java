@@ -9,6 +9,10 @@ public class Samochod {
     int nrPietra;
     int nrRzedu;
 
+    public Samochod(){
+
+    }
+
     public String getNrRejestracyjny() {
         return nrRejestracyjny;
     }
