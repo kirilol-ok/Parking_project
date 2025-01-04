@@ -19,7 +19,7 @@ user --> UC7 : "Kup bilet"
 user --> UC8 : "Zapłać karę"
 
 admin --> UC1 : "Rozpoznaj tablicę"
-admin --> UC2 : "Rozpocznij liczenie"
+admin --> UC2 : "Rozpocznij liczenie czasu"
 admin --> UC3 : "Nałóż karę"
 admin --> UC4 : "Policz wolne miejsca"
 admin --> UC5 : "Przypisz miejsce"
