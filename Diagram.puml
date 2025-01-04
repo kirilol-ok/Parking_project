@@ -1,0 +1,49 @@
+@startuml
+left to right direction
+skinparam actorStyle stickman
+
+actor "User" as user
+actor "Admin" as admin
+
+rectangle "Parking Management System" as system {
+    usecase "Sczytaj tablicę rejestracyjną" as UC1
+    usecase "Rozpocznij liczenie czasu parkowania" as UC2
+    usecase "Nałóż karę za przekroczenie czasu" as UC3
+    usecase "Policz liczbę wolnych miejsc" as UC4
+    usecase "Przypisz miejsce samochodowi" as UC5
+    usecase "Kup bilet" as UC7
+    usecase "Zapłać karę" as UC8
+}
+
+user --> UC7 : "Kup bilet"
+user --> UC8 : "Zapłać karę"
+
+admin --> UC1 : "Rozpoznaj tablicę"
+admin --> UC2 : "Rozpocznij liczenie"
+admin --> UC3 : "Nałóż karę"
+admin --> UC4 : "Policz wolne miejsca"
+admin --> UC5 : "Przypisz miejsce"
+@enduml
+
+@startuml
+class Samochod {
+    - nrRejestracyjny: String
+    - rachunek: double
+    + viewRachunek(): void
+    + viewTimeRemaining(): void
+}
+
+class Parking {
+    - iloscMiejsc: int
+    + policzWolneMiejsca(): int
+    + przypiszMiejsce(samochod: Samochod): boolean
+}
+
+class Miejsce {
+    - nrMiejsca: int
+    - czyJestZajete: boolean
+}
+
+Samochod --> Miejsce : "zaparkowany na"
+Miejsce --> Parking : "należy do"
+@enduml
