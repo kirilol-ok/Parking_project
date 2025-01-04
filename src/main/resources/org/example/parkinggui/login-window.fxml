@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.parkinggui.LoginController"
-            prefHeight="400.0" prefWidth="600.0">
-
+            prefHeight="500.0" prefWidth="600.0">
+    <children>
+        <VBox alignment="CENTER" spacing="20.0" layoutX="150.0" layoutY="20.0" prefWidth="300.0">
+            <children>
+                <Label text="Zakup biletu parkingowego" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <Label text="Wybierz czas parkowania:" />
+                <ComboBox fx:id="durationComboBox" promptText="Wybierz czas">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="1 godzina" />
+                            <String fx:value="2 godziny" />
+                            <String fx:value="6 godzin" />
+                            <String fx:value="12 godzin" />
+                            <String fx:value="24 godziny" />
+                            <String fx:value="1 tydzień" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <Label text="Numer rejestracyjny samochodu:" />
+                <TextField fx:id="licensePlateTextField" promptText="Wpisz nr rejestracyjny" />
+                <Button text="Kup bilet" fx:id="buyTicketButton" prefWidth="200.0" />
+                <Label fx:id="confirmationLabel" textFill="green" visible="false" />
+                <Label fx:id="errorLabel" textFill="red" visible="false" />
+                <Separator orientation="HORIZONTAL" />
+                <Label text="Logowanie administratora" style="-fx-font-size: 16px;" />
+                <PasswordField fx:id="passwordField" promptText="Hasło" />
+                <Button text="Zaloguj" fx:id="loginButton" prefWidth="200.0" />
+                <Label fx:id="loginErrorLabel" textFill="red" visible="false" />
+            </children>
+        </VBox>
+    </children>
 </AnchorPane>
