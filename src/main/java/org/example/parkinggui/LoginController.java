@@ -127,8 +127,8 @@ public class LoginController {
 
             stage.show();
 
-            Stage currentStage = (Stage) loginButton.getScene().getWindow();
-            currentStage.close();
+            //Stage currentStage = (Stage) loginButton.getScene().getWindow(); login-window zamyka sie po zalogowaniu admina
+            //currentStage.close();
         } catch (Exception e) {
             e.printStackTrace();
             loginErrorLabel.setText("Błąd podczas otwierania panelu administratora.");

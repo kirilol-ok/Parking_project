@@ -1,7 +1,6 @@
 package org.example.parkinggui.symulator;
 
 import java.util.Random;
-import java.util.random.*;
 
 public class BramkaPlatnosci {
     String kodFlik = "";
