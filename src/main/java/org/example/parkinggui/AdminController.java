@@ -1,49 +1,54 @@
 package org.example.parkinggui;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.example.parkinggui.symulator.Samochod;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminController {
 
-    // do polaczenia z backendem
     @FXML
-    private TableView<ParkingSpot> parkingTable;
+    private TableView<Samochod> parkingTable;
 
     @FXML
-    private TableColumn<ParkingSpot, String> rowColumn;
+    private TableColumn<Samochod, String> rowColumn;
 
     @FXML
-    private TableColumn<ParkingSpot, String> spotColumn;
+    private TableColumn<Samochod, String> spotColumn;
 
     @FXML
-    private TableColumn<ParkingSpot, String> statusColumn;
+    private TableColumn<Samochod, String> statusColumn;
 
     @FXML
-    private TableColumn<ParkingSpot, String> licenseColumn;
+    private TableColumn<Samochod, String> licenseColumn;
 
     @FXML
-    private TableColumn<ParkingSpot, String> timeLeftColumn;
+    private TableColumn<Samochod, String> timeLeftColumn;
 
     @FXML
     private Button refreshButton;
 
-    private ObservableList<ParkingSpot> parkingData;
+    private ObservableList<Samochod> parkingData;
 
     @FXML
     public void initialize() {
-        // do uzupelnienia
-        rowColumn.setCellValueFactory(data -> data.getValue().rowProperty());
-        spotColumn.setCellValueFactory(data -> data.getValue().spotProperty());
-        statusColumn.setCellValueFactory(data -> data.getValue().statusProperty());
-        licenseColumn.setCellValueFactory(data -> data.getValue().licensePlateProperty());
-        timeLeftColumn.setCellValueFactory(data -> data.getValue().timeLeftProperty());
+        // Powiązanie kolumn tabeli z właściwościami klasy Samochod
+        rowColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getNrRzedu())));
+        spotColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getNrPietra())));
+        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTimeRemaining() > 0 ? "Zajęte" : "Wolne"));
+        licenseColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNrRejestracyjny()));
+        timeLeftColumn.setCellValueFactory(data -> new SimpleStringProperty(formatTime(data.getValue().getTimeRemaining())));
 
-        // do uzupelnienia
+        // Inicjalizacja danych
         parkingData = FXCollections.observableArrayList(generateSampleData());
         parkingTable.setItems(parkingData);
 
+        // Obsługa przycisku odświeżania
         refreshButton.setOnAction(event -> refreshParkingData());
     }
 
@@ -52,76 +57,27 @@ public class AdminController {
         parkingData.setAll(generateSampleData()); // Przykład - zastąpienie danymi testowymi
     }
 
-    /* tutaj jakis generator miejsc, powinien pozwolic na testy bez polaczenia z backendem
-    private ObservableList<ParkingSpot> generateSampleData() {
-        ObservableList<ParkingSpot> data = FXCollections.observableArrayList();
-
-        for (int row = 1; row <= 6; row++) {
-            for (int spot = 1; spot <= 8; spot++) {
-                String status = (row % 2 == 0 && spot % 2 == 0) ? "Zajęte" : "Wolne";
-                String license = status.equals("Zajęte") ? "ABC123" + row + spot : "";
-                String timeLeft = status.equals("Zajęte") ? "1h 20m" : "0h 0m";
-
-                data.add(new ParkingSpot(
-                        "Rząd " + row,
-                        "Miejsce " + spot,
-                        status,
-                        license,
-                        timeLeft
-                ));
-            }
+    private List<Samochod> generateSampleData() {
+        // Generowanie przykładowych danych o samochodach
+        List<Samochod> samochody = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Samochod samochod = new Samochod();
+            samochod.nrRejestracyjny = ;
+            samochod.rachunek = ;
+            samochod.timeRemaining = ;
+            samochod.nrRzedu = ;
+            samochod.nrPietra = ;
+            samochody.add(samochod);
         }
-        return data;
+        return samochody;
     }
 
-     */
-}
-
-/*
-MODEL PARKING SPOT ------------------------------------------------------------------
-
-package org.example.parkinggui;
-
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
-public class ParkingSpot {
-
-    private final StringProperty row;
-    private final StringProperty spot;
-    private final StringProperty status;
-    private final StringProperty licensePlate;
-    private final StringProperty timeLeft;
-
-    public ParkingSpot(String row, String spot, String status, String licensePlate, String timeLeft) {
-        this.row = new SimpleStringProperty(row);
-        this.spot = new SimpleStringProperty(spot);
-        this.status = new SimpleStringProperty(status);
-        this.licensePlate = new SimpleStringProperty(licensePlate);
-        this.timeLeft = new SimpleStringProperty(timeLeft);
-    }
-
-    public StringProperty rowProperty() {
-        return row;
-    }
-
-    public StringProperty spotProperty() {
-        return spot;
-    }
-
-    public StringProperty statusProperty() {
-        return status;
-    }
-
-    public StringProperty licensePlateProperty() {
-        return licensePlate;
-    }
-
-    public StringProperty timeLeftProperty() {
-        return timeLeft;
+    private String formatTime(double timeInMinutes) {
+        if (timeInMinutes <= 0) {
+            return "Brak";
+        }
+        int hours = (int) timeInMinutes / 60;
+        int minutes = (int) timeInMinutes % 60;
+        return hours + "h " + minutes + "min";
     }
 }
-
-
-
- */
