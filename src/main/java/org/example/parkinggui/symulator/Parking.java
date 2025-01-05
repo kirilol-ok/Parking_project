@@ -63,6 +63,10 @@ public class Parking {
         }
     }
 
+    public ArrayList<Object[]> getDatabase() {
+        return parkingData;
+    }
+
     public static void main(String[] args) {
         Parking parking = new Parking();
         System.out.println(parking.getStatusMiejsca(10, 4));

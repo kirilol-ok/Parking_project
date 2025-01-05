@@ -6,7 +6,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import org.example.parkinggui.symulator.Parking;
+import org.example.parkinggui.symulator.Samochod;
+import org.example.parkinggui.symulator.EmpDatabase;
+
 public class LoginController {
+    private AdminController adminController;
+    public void setAdminController(AdminController adminController) {
+        this.adminController = adminController;
+    }
+
+
+    Parking parking = new Parking();
 
     @FXML
     private ComboBox<String> durationComboBox;
@@ -42,6 +53,8 @@ public class LoginController {
     }
 
     private void handleBuyTicket() {
+        Samochod samochod = new Samochod();
+
         String licensePlate = licensePlateTextField.getText();
         String duration = durationComboBox.getValue();
 
@@ -57,42 +70,80 @@ public class LoginController {
             confirmationLabel.setText("Bilet zakupiony na " + duration + " dla samochodu: " + licensePlate);
             confirmationLabel.setVisible(true);
             errorLabel.setVisible(false);
+
+            samochod.setNrRejestracyjny(licensePlate);
+            samochod.setTimeRemaining(extractNumberFromString(duration));
+            for(int i = 1; i < parking.getDatabase().size(); i++){
+                Object[] row = parking.getDatabase().get(i);
+                if (row[2].equals(true)) {
+                    samochod.setNrRzedu((Integer) row[0]);
+                    samochod.setNrMiejsca((Integer) row[0]);
+                }
+            }
+        }
+        if (adminController == null) { //test
+            System.out.println("Ошибка: adminController равен null.");
+        } else if (adminController.getSamochody() == null) {
+            System.out.println("Ошибка: список samochody равен null.");
+        } else {
+            adminController.getSamochody().add(samochod);
+            adminController.refreshTable();
+            System.out.println("Машина добавлена: " + samochod.getNrRejestracyjny());
+            System.out.println("Текущий список: " + adminController.getSamochody());
         }
     }
 
+    //wejscie do systemu admin z kluczem
     private void handleLogin() {
         String password = passwordField.getText();
+        EmpDatabase empDatabase = new EmpDatabase();
+        boolean isLoggedIn = false;
 
-        if ("admin".equals(password)) {
-            openAdminWindow();
-        } else {
+        for (int i = 0; i < empDatabase.getEmpDatabase().size(); i++) {
+            Object[] row = empDatabase.getEmpDatabase().get(i);
+            if (row[3].equals(password)) {
+                openAdminWindow();
+                isLoggedIn = true;
+                break;
+            }
+        }
+
+        if (!isLoggedIn) {
             loginErrorLabel.setText("Niepoprawne hasło.");
             loginErrorLabel.setVisible(true);
         }
     }
 
+
     private void openAdminWindow() {
         try {
-            // admin-window.fxml
             FXMLLoader loader = new FXMLLoader(getClass().getResource("admin-window.fxml"));
             Stage stage = new Stage();
             stage.setScene(new Scene(loader.load()));
             stage.setTitle("Panel Administratora");
+
+            AdminController adminController = loader.getController();
+            this.setAdminController(adminController);
+
             stage.show();
 
-            // zamkniecie login-window - opcjonalnie
             Stage currentStage = (Stage) loginButton.getScene().getWindow();
             currentStage.close();
         } catch (Exception e) {
             e.printStackTrace();
-
-            /*
-            pozniej mozna dodac:
-
-                Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, "Błąd podczas otwierania okna administratora", e);
-                showAlert("Błąd", "Nie można otworzyć okna administratora.");
-
-             */
+            loginErrorLabel.setText("Błąd podczas otwierania panelu administratora.");
+            loginErrorLabel.setVisible(true);
         }
+    }
+
+
+
+    private int extractNumberFromString(String input) {
+        String number = input.replaceAll("[^0-9]", "");
+        return number.isEmpty() ? 0 : Integer.parseInt(number); //wyciaga liczby z textu
+    }
+
+    public static void main(String[] args) {
+        LoginController loginController = new LoginController();
     }
 }

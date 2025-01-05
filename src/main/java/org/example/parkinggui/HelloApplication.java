@@ -10,9 +10,17 @@ import java.io.IOException;
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-window.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("Hello!");
+        FXMLLoader adminLoader = new FXMLLoader(HelloApplication.class.getResource("admin-window.fxml"));
+        adminLoader.load(); // Загружаем admin-window.fxml
+        AdminController adminController = adminLoader.getController(); // Получаем контроллер после load()
+
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login-window.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 600);
+        LoginController loginController = fxmlLoader.getController(); // Получаем контроллер после load()
+
+        loginController.setAdminController(adminController);
+
+        stage.setTitle("Logging window");
         stage.setScene(scene);
         stage.show();
     }

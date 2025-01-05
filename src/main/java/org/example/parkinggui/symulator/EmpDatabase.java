@@ -36,21 +36,11 @@ public class EmpDatabase {
         }
     }
 
+    public ArrayList<Object[]> getEmpDatabase() {
+        return empDatabase;
+    }
+
     public static void main(String[] args) {
-        EmpDatabase db = new EmpDatabase();
-        db.printDatabase();
 
-        System.out.println("\nДобавляем сотрудника:");
-        db.addEmployee("John Doe", "user", "jdoe");
-        db.printDatabase();
-
-        System.out.println("\nУдаляем сотрудника с ID 2:");
-        boolean removed = db.removeEmployeeById("2");
-        if (removed) {
-            System.out.println("Сотрудник с ID 2 удален.");
-        } else {
-            System.out.println("Сотрудник с ID 2 не найден.");
-        }
-        db.printDatabase();
     }
 }

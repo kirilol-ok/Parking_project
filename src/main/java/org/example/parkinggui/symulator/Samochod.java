@@ -12,11 +12,20 @@ public class Samochod {
     String status;
 
     public Samochod(){
-
+        this.nrRejestracyjny = "";
+        this.rachunek = 0;
+        this.dlug = 0;
+        this.timeRemaining = 0;
+        this.nrMiejsca = 0;
+        this.nrRzedu = 0;
     }
 
     public String getNrRejestracyjny() {
         return nrRejestracyjny;
+    }
+
+    public void setNrRejestracyjny(String nrRejestracyjny) {
+        this.nrRejestracyjny = nrRejestracyjny;
     }
 
     public double getRachunek() {
