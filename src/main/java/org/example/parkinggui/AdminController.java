@@ -1,25 +1,30 @@
 package org.example.parkinggui;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.parkinggui.symulator.Samochod;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.example.parkinggui.symulator.Parking;
 
 public class AdminController {
+    LoginController loginController;
+    public void getLoginController(LoginController loginController) {
+        this.loginController = loginController;
+    }
+
+    private ObservableList<Samochod> samochody = FXCollections.observableArrayList();
 
     @FXML
     private TableView<Samochod> parkingTable;
 
     @FXML
-    private TableColumn<Samochod, String> rowColumn;
+    private TableColumn<Samochod, Integer> rowColumn;
 
     @FXML
-    private TableColumn<Samochod, String> spotColumn;
+    private TableColumn<Samochod, Integer> spotColumn;
 
     @FXML
     private TableColumn<Samochod, String> statusColumn;
@@ -33,42 +38,42 @@ public class AdminController {
     @FXML
     private Button refreshButton;
 
-    private ObservableList<Samochod> parkingData;
-
     @FXML
     public void initialize() {
-        // Powiązanie kolumn tabeli z właściwościami klasy Samochod
-        rowColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getNrRzedu())));
-        spotColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getNrPietra())));
+        rowColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getNrRzedu()));
+        spotColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getNrMiejsca()));
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTimeRemaining() > 0 ? "Zajęte" : "Wolne"));
         licenseColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNrRejestracyjny()));
         timeLeftColumn.setCellValueFactory(data -> new SimpleStringProperty(formatTime(data.getValue().getTimeRemaining())));
-
-        // Inicjalizacja danych
-        parkingData = FXCollections.observableArrayList(generateSampleData());
-        parkingTable.setItems(parkingData);
-
-        // Obsługa przycisku odświeżania
+        parkingTable.setItems(samochody);
+//        samochody.addAll(generateSampleData());
         refreshButton.setOnAction(event -> refreshParkingData());
     }
 
-    private void refreshParkingData() {
-        // Tutaj można zaimplementować logikę pobierania aktualnych danych z bazy danych lub API
-        parkingData.setAll(generateSampleData()); // Przykład - zastąpienie danymi testowymi
+    public void refreshParkingData() {
+        samochody.clear();
+        samochody.addAll(generateSampleData());
     }
 
-    private List<Samochod> generateSampleData() {
-        // Generowanie przykładowych danych o samochodach
-        List<Samochod> samochody = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+    private ObservableList<Samochod> generateSampleData() {
+        ObservableList<Samochod> sampleData = FXCollections.observableArrayList();
+        for (int i = 1; i <= 10; i++) {
             Samochod samochod = new Samochod();
-            samochod.nrRejestracyjny = ;
-            samochod.rachunek = ;
-            samochod.timeRemaining = ;
-            samochod.nrRzedu = ;
-            samochod.nrPietra = ;
-            samochody.add(samochod);
+            samochod.setNrRzedu(i % 3 + 1);
+            samochod.setNrMiejsca(i);
+            samochod.setNrRejestracyjny("TEST" + i);
+            samochod.setTimeRemaining(i * 10);
+            sampleData.add(samochod);
         }
+        return sampleData;
+    }
+
+    public void addSamochod(Samochod samochod) {
+        samochody.add(samochod);
+    }
+
+
+    public ObservableList<Samochod> getSamochody() {
         return samochody;
     }
 
@@ -79,5 +84,9 @@ public class AdminController {
         int hours = (int) timeInMinutes / 60;
         int minutes = (int) timeInMinutes % 60;
         return hours + "h " + minutes + "min";
+    }
+
+    public void refreshTable() {
+        parkingTable.refresh();
     }
 }

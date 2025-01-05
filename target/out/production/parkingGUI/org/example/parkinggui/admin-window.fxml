@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.parkinggui.AdminController"
+            prefHeight="600.0" prefWidth="800.0">
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="10.0" layoutX="20.0" layoutY="10.0" prefWidth="760.0">
+            <children>
+                <Label text="Stan parkingu" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <TableView fx:id="parkingTable" prefHeight="500.0" prefWidth="740.0">
+                    <columns>
+                        <TableColumn text="Rząd" fx:id="rowColumn" prefWidth="100.0" />
+                        <TableColumn text="Numer miejsca" fx:id="spotColumn" prefWidth="150.0" />
+                        <TableColumn text="Status" fx:id="statusColumn" prefWidth="150.0" />
+                        <TableColumn text="Nr rejestracyjny" fx:id="licenseColumn" prefWidth="180.0" />
+                        <TableColumn text="Pozostały czas" fx:id="timeLeftColumn" prefWidth="160.0" />
+                    </columns>
+                </TableView>
+                <Button text="Odśwież" fx:id="refreshButton" prefWidth="150.0" />
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
+

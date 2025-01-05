@@ -6,11 +6,26 @@ public class Samochod {
     double dlug;
     double timeRemaining;
 
-    int nrPietra;
+    int nrMiejsca;
     int nrRzedu;
+
+    String status;
+
+    public Samochod(){
+        this.nrRejestracyjny = "";
+        this.rachunek = 0;
+        this.dlug = 0;
+        this.timeRemaining = 0;
+        this.nrMiejsca = 0;
+        this.nrRzedu = 0;
+    }
 
     public String getNrRejestracyjny() {
         return nrRejestracyjny;
+    }
+
+    public void setNrRejestracyjny(String nrRejestracyjny) {
+        this.nrRejestracyjny = nrRejestracyjny;
     }
 
     public double getRachunek() {
@@ -33,16 +48,16 @@ public class Samochod {
         this.timeRemaining = timeRemaining;
     }
 
-    public int getNrPietra() {
-        return nrPietra;
+    public int getNrMiejsca() {
+        return nrMiejsca;
     }
 
-    public void setNrPietra(int nrPietra) {
-        this.nrPietra = nrPietra;
+    public void setNrMiejsca(int nrMiejsca) {
+        this.nrMiejsca = nrMiejsca;
     }
 
     public void resetNrPietra() {
-        this.nrPietra = Integer.parseInt(null);
+        this.nrMiejsca = Integer.parseInt(null);
     }
 
     public int getNrRzedu() {
