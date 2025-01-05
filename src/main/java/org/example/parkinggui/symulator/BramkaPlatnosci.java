@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.random.*;
 
 public class BramkaPlatnosci {
-    String kodFlik;
+    String kodFlik = "";
 
     public String getKodFlik(){
         return kodFlik;
@@ -20,5 +20,11 @@ public class BramkaPlatnosci {
 
     public void resetujKod(){
         kodFlik = "";
+    }
+
+    public static void main(String[] args) {
+        BramkaPlatnosci b = new BramkaPlatnosci();
+        b.wegenerujKod();
+        b.getKodFlik();
     }
 }

@@ -6,8 +6,10 @@ public class Samochod {
     double dlug;
     double timeRemaining;
 
-    int nrPietra;
+    int nrMiejsca;
     int nrRzedu;
+
+    String status;
 
     public Samochod(){
 
@@ -37,16 +39,16 @@ public class Samochod {
         this.timeRemaining = timeRemaining;
     }
 
-    public int getNrPietra() {
-        return nrPietra;
+    public int getNrMiejsca() {
+        return nrMiejsca;
     }
 
-    public void setNrPietra(int nrPietra) {
-        this.nrPietra = nrPietra;
+    public void setNrMiejsca(int nrMiejsca) {
+        this.nrMiejsca = nrMiejsca;
     }
 
     public void resetNrPietra() {
-        this.nrPietra = Integer.parseInt(null);
+        this.nrMiejsca = Integer.parseInt(null);
     }
 
     public int getNrRzedu() {
