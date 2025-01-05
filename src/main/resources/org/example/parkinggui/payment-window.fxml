@@ -18,6 +18,8 @@
                 <Label fx:id="remainingTimeLabel" style="-fx-font-size: 14px;" />
                 <Label text="Kwota do zapłaty:" />
                 <Label fx:id="paymentAmountLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                <Label text="Wprowadź kod płatności:" />
+                <TextField fx:id="paymentCodeField" promptText="Wpisz kod płatności" />
                 <Button text="Zapłać" fx:id="payButton" prefWidth="200.0" />
                 <Label fx:id="confirmationLabel" textFill="green" visible="false" />
                 <Label fx:id="errorLabel" textFill="red" visible="false" />
