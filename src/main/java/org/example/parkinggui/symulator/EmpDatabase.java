@@ -19,12 +19,12 @@ public class EmpDatabase {
     public boolean removeEmployeeById(String id) {
         for (int i = 0; i < empDatabase.size(); i++) {
             Object[] row = empDatabase.get(i);
-            if (row[0].equals(id)) { // Проверка ID в первом элементе строки
+            if (row[0].equals(id)) {
                 empDatabase.remove(i);
-                return true; // Успешно удалено
+                return true;
             }
         }
-        return false; // ID не найден
+        return false;
     }
 
     public void printDatabase() {
