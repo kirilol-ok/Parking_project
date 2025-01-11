@@ -25,5 +25,17 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
+
+    public void openAdminWindow() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("admin-window.fxml"));
+        Scene adminScene = new Scene(loader.load());
+        AdminController adminController = loader.getController();
+
+        Stage adminStage = new Stage();
+        adminStage.setTitle("Panel Administratora");
+        adminStage.setScene(adminScene);
+        adminStage.show();
+}
+
     public static void main(String[] args) { launch(); }
 }

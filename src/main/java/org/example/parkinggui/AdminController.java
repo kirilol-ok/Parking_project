@@ -6,14 +6,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.example.parkinggui.symulator.Samochod;
 import org.example.parkinggui.symulator.Parking;
+import org.example.parkinggui.symulator.Samochod;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 public class AdminController {
-    LoginController loginController;
-    public void getLoginController(LoginController loginController) {
-        this.loginController = loginController;
-    }
+
+    private Parking parking;
 
     private ObservableList<Samochod> samochody = FXCollections.observableArrayList();
 
@@ -36,6 +37,15 @@ public class AdminController {
     private TableColumn<Samochod, String> timeLeftColumn;
 
     @FXML
+    private TableColumn<Samochod, String> licensePlateColumn;
+
+    @FXML
+    private TableColumn<Samochod, Double> remainingTimeColumn;
+
+    @FXML
+    private Label adminLabel;
+
+    @FXML
     private Button refreshButton;
 
     @FXML
@@ -45,45 +55,91 @@ public class AdminController {
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTimeRemaining() > 0 ? "Zajęte" : "Wolne"));
         licenseColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNrRejestracyjny()));
         timeLeftColumn.setCellValueFactory(data -> new SimpleStringProperty(formatTime(data.getValue().getTimeRemaining())));
-        parkingTable.setItems(samochody);
-//        samochody.addAll(generateSampleData());
-        refreshButton.setOnAction(event -> refreshParkingData());
-    }
 
-    public void refreshParkingData() {
-        samochody.clear();
-        samochody.addAll(generateSampleData());
-    }
-
-    private ObservableList<Samochod> generateSampleData() {
-        ObservableList<Samochod> sampleData = FXCollections.observableArrayList();
-        for (int i = 1; i <= 10; i++) {
-            Samochod samochod = new Samochod();
-            samochod.setNrRzedu(i % 3 + 1);
-            samochod.setNrMiejsca(i);
-            samochod.setNrRejestracyjny("TEST" + i);
-            samochod.setTimeRemaining(i * 10);
-            sampleData.add(samochod);
+        // 15 wolnych miejsc
+        for (int i = 1; i <= 3; i++) {
+            for (int j = 1; j <= 5; j++) {
+                samochody.add(new Samochod(i, j, "", 0)); // Rząd, miejsce, brak rejestracji, czas = 0
+            }
         }
-        return sampleData;
+
+        parkingTable.setItems(samochody);
+
+        startTimer(); // miara czasu aby aktualizowac ten czas parkowania
+
+        refreshButton.setOnAction(event -> refreshTable());
     }
+
 
     public void addSamochod(Samochod samochod) {
         samochody.add(samochod);
+        refreshTable();
     }
-
 
     public ObservableList<Samochod> getSamochody() {
         return samochody;
     }
 
-    private String formatTime(double timeInMinutes) {
-        if (timeInMinutes <= 0) {
-            return "Brak";
+    public void ustawWolneMiejsca() {
+        samochody.clear();
+        int iloscRzedow = 3;
+        int iloscMiejscWRzedzie = 5;
+        for (int i = 1; i <= iloscRzedow; i++) {
+            for (int j = 1; j <= iloscMiejscWRzedzie; j++) {
+                samochody.add(new Samochod(i, j, "", 0));
+            }
         }
-        int hours = (int) timeInMinutes / 60;
-        int minutes = (int) timeInMinutes % 60;
-        return hours + "h " + minutes + "min";
+        refreshTable();
+    }
+
+    public void zaktualizujMiejsce(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double czasPozostaly) {
+        for (Samochod samochod : samochody) {
+            if (samochod.getNrRzedu() == nrRzedu && samochod.getNrMiejsca() == nrMiejsca) {
+                samochod.setNrRejestracyjny(nrRejestracyjny);
+                samochod.setTimeRemaining(czasPozostaly);
+                break; // znajdzie odpowiednie miejsce
+            }
+        }
+        parkingTable.refresh();
+    }
+
+    public void synchronizujDaneParkingowe() {
+        samochody.clear();
+        samochody.addAll(parking.getWolneMiejsca());
+        samochody.addAll(parking.getZajeteMiejsca());
+        parkingTable.refresh();
+    }
+
+    public void setParking(Parking parking) {
+        this.parking = parking;
+    }
+
+    private void startTimer() {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(60), event -> updateTime()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    private void updateTime() {
+        for (Samochod samochod : samochody) {
+            if (samochod.getTimeRemaining() > 0) {
+                samochod.setTimeRemaining(samochod.getTimeRemaining() - 1); // Odejmujemy 1 minutę
+            }
+        }
+        parkingTable.refresh();
+    }
+
+    private String formatTime(double timeInMinutes) {
+        int totalMinutes = (int) timeInMinutes; // zaokraglenie
+
+        int hours = Math.abs(totalMinutes) / 60;
+        int minutes = Math.abs(totalMinutes) % 60;
+
+        if (totalMinutes >= 0) {
+            return hours + "h " + minutes + "min";
+        } else {
+            return "-" + hours + "h " + minutes + "min";
+        }
     }
 
     public void refreshTable() {

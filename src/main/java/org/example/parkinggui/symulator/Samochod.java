@@ -1,74 +1,108 @@
 package org.example.parkinggui.symulator;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Samochod {
-    String nrRejestracyjny;
-    double rachunek;
-    double dlug;
-    double timeRemaining;
+    private final SimpleStringProperty nrRejestracyjny;
+    private final DoubleProperty rachunek;
+    private final DoubleProperty dlug;
+    private final DoubleProperty timeRemaining;
+    private final SimpleIntegerProperty nrMiejsca;
+    private final SimpleIntegerProperty nrRzedu;
+    public String status;
 
-    int nrMiejsca;
-    int nrRzedu;
+    public Samochod(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double timeRemaining) {
+        this.nrRejestracyjny = new SimpleStringProperty(nrRejestracyjny);
+        this.rachunek = new SimpleDoubleProperty(0);
+        this.dlug = new SimpleDoubleProperty(0);
+        this.timeRemaining = new SimpleDoubleProperty(timeRemaining);
+        this.nrMiejsca = new SimpleIntegerProperty(nrMiejsca);
+        this.nrRzedu = new SimpleIntegerProperty(nrRzedu);
+    }
 
-    String status;
-
-    public Samochod(){
-        this.nrRejestracyjny = "";
-        this.rachunek = 0;
-        this.dlug = 0;
-        this.timeRemaining = 0;
-        this.nrMiejsca = 0;
-        this.nrRzedu = 0;
+    public Samochod(Samochod samochod) {
+        this.nrRejestracyjny = new SimpleStringProperty(samochod.getNrRejestracyjny());
+        this.rachunek = new SimpleDoubleProperty(samochod.getRachunek());
+        this.dlug = new SimpleDoubleProperty(samochod.getDlug());
+        this.timeRemaining = new SimpleDoubleProperty(samochod.getTimeRemaining());
+        this.nrMiejsca = new SimpleIntegerProperty(samochod.getNrMiejsca());
+        this.nrRzedu = new SimpleIntegerProperty(samochod.getNrRzedu());
     }
 
     public String getNrRejestracyjny() {
-        return nrRejestracyjny;
+        return nrRejestracyjny.get();
     }
 
     public void setNrRejestracyjny(String nrRejestracyjny) {
-        this.nrRejestracyjny = nrRejestracyjny;
+        this.nrRejestracyjny.set(nrRejestracyjny);
+    }
+
+    public SimpleStringProperty nrRejestracyjnyProperty() {
+        return nrRejestracyjny;
     }
 
     public double getRachunek() {
+        return rachunek.get();
+    }
+
+    public void setRachunek(double rachunek) {
+        this.rachunek.set(rachunek);
+    }
+
+    public DoubleProperty rachunekProperty() {
         return rachunek;
     }
 
     public double getDlug() {
-        return dlug;
+        return dlug.get();
     }
 
     public void setDlug(double dlug) {
-        this.dlug = this.dlug + dlug;
+        this.dlug.set(this.dlug.get() + dlug);
+    }
+
+    public DoubleProperty dlugProperty() {
+        return dlug;
     }
 
     public double getTimeRemaining() {
-        return timeRemaining;
+        return timeRemaining.get();
     }
 
     public void setTimeRemaining(double timeRemaining) {
-        this.timeRemaining = timeRemaining;
+        this.timeRemaining.set(timeRemaining);
+    }
+
+    public DoubleProperty timeRemainingProperty() {
+        return timeRemaining;
     }
 
     public int getNrMiejsca() {
-        return nrMiejsca;
+        return nrMiejsca.get();
     }
 
     public void setNrMiejsca(int nrMiejsca) {
-        this.nrMiejsca = nrMiejsca;
+        this.nrMiejsca.set(nrMiejsca);
     }
 
-    public void resetNrPietra() {
-        this.nrMiejsca = Integer.parseInt(null);
+    public SimpleIntegerProperty nrMiejscaProperty() {
+        return nrMiejsca;
     }
 
     public int getNrRzedu() {
-        return nrRzedu;
+        return nrRzedu.get();
     }
 
     public void setNrRzedu(int nrRzedu) {
-        this.nrRzedu = nrRzedu;
+        this.nrRzedu.set(nrRzedu);
     }
 
-    public void resetNrRzedu() {
-        this.nrRzedu = Integer.parseInt(null);
+    public SimpleIntegerProperty nrRzeduProperty() {
+        return nrRzedu;
     }
 }

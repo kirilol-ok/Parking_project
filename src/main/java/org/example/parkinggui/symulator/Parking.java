@@ -3,72 +3,55 @@ package org.example.parkinggui.symulator;
 import java.util.ArrayList;
 
 public class Parking {
-    int iloscRzedow;
-    int iloscMiejsc;
 
-    ArrayList<Object[]> parkingData = new ArrayList();
+    private final int iloscRzedow = 3;
+    private final int iloscMiejscWRzedzie = 5;
+    private final Object[][] parkingData;
 
     public Parking() {
-        this.iloscRzedow = 10;
-        this.iloscMiejsc = 54;
-        for(int i = 1; i < iloscRzedow; i++){
-            for(int j = 1; j < iloscMiejsc/iloscRzedow+1; j++){
-                parkingData.add(new Object[]{i, j, true});
+        parkingData = new Object[iloscRzedow][iloscMiejscWRzedzie];
+        for (int i = 0; i < iloscRzedow; i++) {
+            for (int j = 0; j < iloscMiejscWRzedzie; j++) {
+                parkingData[i][j] = null; // wolne miejsce
             }
         }
-
-        ArrayList<Integer> row = new ArrayList();
-        for(int j = 1; j < iloscMiejsc%iloscRzedow+1; j++){
-            parkingData.add(new Object[]{iloscRzedow, j, true});
-        }
-
-        printDatabase();
     }
 
-    public Parking(int iloscRzedow, int iloscMiejsc) {
-        this.iloscRzedow = iloscRzedow;
-        this.iloscMiejsc = iloscMiejsc;
-        for(int i = 1; i < iloscRzedow; i++){
-            for(int j = 1; j < iloscMiejsc/iloscRzedow+1; j++){
-                parkingData.add(new Object[]{i, j, true});
+    public int[] zajmijMiejsce(String nrRejestracyjny, int czasParkowania) {
+        for (int i = 0; i < iloscRzedow; i++) {
+            for (int j = 0; j < iloscMiejscWRzedzie; j++) {
+                if (parkingData[i][j] == null) { // znaleziono wolne miejsce
+                    parkingData[i][j] = new Object[]{nrRejestracyjny, czasParkowania};
+                    return new int[]{i + 1, j + 1}; // zwraca rząd i miejsce
+                }
             }
         }
-
-        ArrayList<Integer> row = new ArrayList();
-        for(int j = 1; j < iloscMiejsc%iloscRzedow+1; j++){
-            parkingData.add(new Object[]{iloscRzedow, j, true});
-        }
-
-        printDatabase();
-
+        return null; // brak wolnych miejsc
     }
 
-    public boolean getStatusMiejsca(int rzad, int miejsce) {
-        for (Object[] row : parkingData) {
-            int currentRzad = (int) row[0];
-            int currentMiejsce = (int) row[1];
-            if (currentRzad == rzad && currentMiejsce == miejsce) {
-                return (boolean) row[2];
+
+    public ArrayList<Samochod> getZajeteMiejsca() {
+        ArrayList<Samochod> zajete = new ArrayList<>();
+        for (int i = 0; i < iloscRzedow; i++) {
+            for (int j = 0; j < iloscMiejscWRzedzie; j++) {
+                if (parkingData[i][j] != null) {
+                    zajete.add((Samochod) parkingData[i][j]);
+                }
             }
         }
-        throw new IllegalArgumentException("Lokalizacja o wskazanym rzadzie i numerze nie zostala znaleziona!");
+        return zajete;
     }
 
-        public void printDatabase() {
-        for (Object[] row : parkingData) {
-            for (Object value : row) {
-                System.out.print(value + " ");
+
+    public ArrayList<Samochod> getWolneMiejsca() {
+        ArrayList<Samochod> wolne = new ArrayList<>();
+        for (int i = 0; i < iloscRzedow; i++) {
+            for (int j = 0; j < iloscMiejscWRzedzie; j++) {
+                if (parkingData[i][j] == null) {
+                    wolne.add(new Samochod(i + 1, j + 1, "", 0)); // Puste miejsce
+                }
             }
-            System.out.println();
         }
-    }
-
-    public ArrayList<Object[]> getDatabase() {
-        return parkingData;
-    }
-
-    public static void main(String[] args) {
-        Parking parking = new Parking();
-        System.out.println(parking.getStatusMiejsca(10, 4));
+        return wolne;
     }
 }

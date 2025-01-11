@@ -10,8 +10,8 @@ public class SamochodDatabase {
     public SamochodDatabase() {}
 
     public void dodajSamochod(Samochod samochod) {
-        samochodData.add(new Object[]{samochod.nrRzedu, samochod.nrMiejsca,
-                samochod.status, samochod.nrRejestracyjny, samochod.timeRemaining});
+        samochodData.add(new Object[]{samochod.getNrRzedu(), samochod.getNrMiejsca(),
+                samochod.status, samochod.getNrRejestracyjny(), samochod.getTimeRemaining()});
     }
 
     public boolean usunSamochod(String nrRejestracyjny) {
