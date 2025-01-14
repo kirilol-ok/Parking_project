@@ -17,8 +17,8 @@
                         <TableColumn fx:id="rowColumn" prefWidth="100.0" text="Rząd" />
                         <TableColumn fx:id="spotColumn" prefWidth="150.0" text="Numer miejsca" />
                         <TableColumn fx:id="statusColumn" prefWidth="150.0" text="Status" />
-                        <TableColumn fx:id="licenseColumn" prefWidth="180.0" text="Nr rejestracyjny" />
-                        <TableColumn fx:id="timeLeftColumn" prefWidth="160.0" text="Pozostały czas" />
+                        <TableColumn fx:id="licenseColumn" prefWidth="184.0" text="Nr rejestracyjny" />
+                        <TableColumn fx:id="timeLeftColumn" prefWidth="173.0" text="Pozostały czas" />
                     </columns>
                 </TableView>
                 <Button fx:id="leaveButton" prefWidth="150.0" text="Opuszczenie miejsca" />

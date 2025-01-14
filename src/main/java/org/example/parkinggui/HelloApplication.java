@@ -26,7 +26,7 @@ public class HelloApplication extends Application {
         loginController.setAdminController(adminController);
         paymentController.setAdminController(adminController);
 
-        stage.setTitle("Logging window");
+        stage.setTitle("Okno Logowania");
         stage.setScene(scene);
         stage.show();
     }
