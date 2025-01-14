@@ -5,10 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
+import org.example.parkinggui.symulator.EmpDatabase;
 import org.example.parkinggui.symulator.Parking;
 import org.example.parkinggui.symulator.Samochod;
-import org.example.parkinggui.symulator.EmpDatabase;
+
+import java.io.IOException;
 
 public class LoginController {
 
@@ -34,9 +35,6 @@ public class LoginController {
 
     @FXML
     private Label errorLabel;
-
-    @FXML
-    private TextField usernameField;
 
     @FXML
     private PasswordField passwordField;
@@ -88,12 +86,17 @@ public class LoginController {
         }
     }
 
-
-    //wejscie do systemu admin z kluczem
+    // Wejście do systemu admin z kluczem
     private void handleLogin() {
         String password = passwordField.getText();
         EmpDatabase empDatabase = new EmpDatabase();
         boolean isLoggedIn = false;
+
+        if (adminController == null) {
+            loginErrorLabel.setText("AdminController nie został poprawnie ustawiony.");
+            loginErrorLabel.setVisible(true);
+            return;
+        }
 
         for (int i = 0; i < empDatabase.getEmpDatabase().size(); i++) {
             Object[] row = empDatabase.getEmpDatabase().get(i);
@@ -123,8 +126,8 @@ public class LoginController {
 
             stage.show();
 
-            //Stage currentStage = (Stage) loginButton.getScene().getWindow(); login-window zamyka sie po zalogowaniu admina
-            //currentStage.close();
+            // Stage currentStage = (Stage) loginButton.getScene().getWindow(); login-window zamyka sie po zalogowaniu admina
+            // currentStage.close();
         } catch (Exception e) {
             e.printStackTrace();
             loginErrorLabel.setText("Błąd podczas otwierania panelu administratora.");

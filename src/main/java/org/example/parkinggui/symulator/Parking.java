@@ -6,22 +6,17 @@ public class Parking {
 
     private final int iloscRzedow = 3;
     private final int iloscMiejscWRzedzie = 5;
-    private final Object[][] parkingData;
+    private final Samochod[][] parkingData;
 
     public Parking() {
-        parkingData = new Object[iloscRzedow][iloscMiejscWRzedzie];
-        for (int i = 0; i < iloscRzedow; i++) {
-            for (int j = 0; j < iloscMiejscWRzedzie; j++) {
-                parkingData[i][j] = null; // wolne miejsce
-            }
-        }
+        parkingData = new Samochod[iloscRzedow][iloscMiejscWRzedzie];
     }
 
     public int[] zajmijMiejsce(String nrRejestracyjny, int czasParkowania) {
         for (int i = 0; i < iloscRzedow; i++) {
             for (int j = 0; j < iloscMiejscWRzedzie; j++) {
                 if (parkingData[i][j] == null) { // znaleziono wolne miejsce
-                    parkingData[i][j] = new Object[]{nrRejestracyjny, czasParkowania};
+                    parkingData[i][j] = new Samochod(i + 1, j + 1, nrRejestracyjny, czasParkowania);
                     return new int[]{i + 1, j + 1}; // zwraca rząd i miejsce
                 }
             }
@@ -29,19 +24,17 @@ public class Parking {
         return null; // brak wolnych miejsc
     }
 
-
     public ArrayList<Samochod> getZajeteMiejsca() {
         ArrayList<Samochod> zajete = new ArrayList<>();
         for (int i = 0; i < iloscRzedow; i++) {
             for (int j = 0; j < iloscMiejscWRzedzie; j++) {
                 if (parkingData[i][j] != null) {
-                    zajete.add((Samochod) parkingData[i][j]);
+                    zajete.add(parkingData[i][j]);
                 }
             }
         }
         return zajete;
     }
-
 
     public ArrayList<Samochod> getWolneMiejsca() {
         ArrayList<Samochod> wolne = new ArrayList<>();
@@ -53,5 +46,11 @@ public class Parking {
             }
         }
         return wolne;
+    }
+
+    public void opuscParking(int rzad, int miejsce) {
+        if (parkingData[rzad][miejsce] != null) {
+            parkingData[rzad][miejsce] = null;
+        }
     }
 }

@@ -43,10 +43,23 @@ public class AdminController {
     private TableColumn<Samochod, Double> remainingTimeColumn;
 
     @FXML
-    private Label adminLabel;
+    private Button refreshButton;
+
 
     @FXML
-    private Button refreshButton;
+    private TextField licensePlateCheckTextField;
+
+    @FXML
+    private Button checkDetailsButton;
+
+    @FXML
+    private Label remainingTimeLabel;
+
+    @FXML
+    private Label amountDueLabel;
+
+    @FXML
+    private Button leaveButton;
 
     @FXML
     public void initialize() {
@@ -67,9 +80,14 @@ public class AdminController {
 
         startTimer(); // miara czasu aby aktualizowac ten czas parkowania
 
-        refreshButton.setOnAction(event -> refreshTable());
+        leaveButton.setOnAction(event -> handleLeave());
     }
 
+    private double calculateAmountDue(Samochod samochod) {
+        double baseRate = 2.0; // example rate per hour
+        double timeParked = samochod.getTimeRemaining();
+        return Math.max(0, (timeParked / 60) * baseRate);
+    }
 
     public void addSamochod(Samochod samochod) {
         samochody.add(samochod);
@@ -123,11 +141,36 @@ public class AdminController {
     private void updateTime() {
         for (Samochod samochod : samochody) {
             if (samochod.getTimeRemaining() > 0) {
-                samochod.setTimeRemaining(samochod.getTimeRemaining() - 1); // Odejmujemy 1 minutę
+                samochod.setTimeRemaining(samochod.getTimeRemaining() - 1); // -1 min
             }
         }
         parkingTable.refresh();
     }
+
+    private void handleLeave() {
+        Samochod selectedSamochod = parkingTable.getSelectionModel().getSelectedItem();
+        if (selectedSamochod != null) {
+            if (selectedSamochod.isZajete()) {
+                selectedSamochod.opuscParking();
+                parking.opuscParking(selectedSamochod.getNrRzedu() - 1, selectedSamochod.getNrMiejsca() - 1);
+                synchronizujDaneParkingowe(); // synchronizujemy dane po opuszczeniu parkingu
+                refreshTable();
+                System.out.println("Samochód z miejsca " + selectedSamochod.getNrRzedu() + "-" + selectedSamochod.getNrMiejsca() + " opuścił parking.");
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "To miejsce jest już wolne.", ButtonType.OK);
+                alert.showAndWait();
+            }
+        }
+    }
+
+    private void handleSamochodLeaving(Samochod selectedSamochod) {
+        if (selectedSamochod != null) {
+            selectedSamochod.opuscParking();
+            parkingTable.refresh();
+            System.out.println("Samochód z miejsca " + selectedSamochod.getNrRzedu() + "-" + selectedSamochod.getNrMiejsca() + " opuścił parking.");
+        }
+    }
+
 
     private String formatTime(double timeInMinutes) {
         int totalMinutes = (int) timeInMinutes; // zaokraglenie

@@ -25,7 +25,7 @@
                             <String fx:value="6 godzin" />
                             <String fx:value="12 godzin" />
                             <String fx:value="24 godziny" />
-                            <String fx:value="168 godziny (tydzień)" />
+                            <String fx:value="168 godzin (tydzień)" />
                         </FXCollections>
                     </items>
                 </ComboBox>

@@ -3,77 +3,88 @@ package org.example.parkinggui;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.parkinggui.symulator.BramkaPlatnosci;
+import org.example.parkinggui.symulator.Samochod;
 
 public class PaymentController {
 
     @FXML
-    private Label remainingTimeLabel;
+    private TextField licensePlateField;
 
     @FXML
     private Label paymentAmountLabel;
 
     @FXML
-    private TextField paymentCodeField;
-
-    @FXML
     private Button payButton;
 
-    @FXML
-    private Label confirmationLabel;
+    private AdminController adminController;
 
-    @FXML
-    private Label errorLabel;
+    private BramkaPlatnosci bramkaPlatnosci = new BramkaPlatnosci();
 
-    private int delayMinutes = 0;
-    private final int ratePerMinute = 2; // 2 zl
-    private final BramkaPlatnosci bramkaPlatnosci = new BramkaPlatnosci();
+    public void setAdminController(AdminController adminController) {
+        this.adminController = adminController;
+        if (this.adminController == null) {
+            showAlert("Błąd", "AdminController nie został poprawnie ustawiony.");
+        }
+    }
 
     @FXML
     public void initialize() {
-        updatePaymentDetails();
         payButton.setOnAction(event -> handlePayment());
     }
 
-    public void setDelayMinutes(int delay) {
-        this.delayMinutes = delay;
-        updatePaymentDetails();
-    }
-
-    private void updatePaymentDetails() {
-        if (delayMinutes <= 0) {
-            remainingTimeLabel.setText("Wyjazd przed czasem. Brak opłat.");
-            paymentAmountLabel.setText("0 zł");
-            payButton.setDisable(true);
-        } else {
-            remainingTimeLabel.setText(delayMinutes + " minut spóźnienia");
-            int amount = delayMinutes * ratePerMinute;
-            paymentAmountLabel.setText(amount + " zł");
-
-            // generowanie kodu z BramkaPlatnosci.java
-            bramkaPlatnosci.resetujKod();
-            bramkaPlatnosci.wegenerujKod();
-            payButton.setDisable(false);
+    private Samochod findCarByLicensePlate(String licensePlate) {
+        if (adminController != null && adminController.getSamochody() != null) {
+            return adminController.getSamochody()
+                    .stream()
+                    .filter(samochod -> licensePlate.equalsIgnoreCase(samochod.getNrRejestracyjny()))
+                    .findFirst()
+                    .orElse(null);
         }
+        return null;
     }
 
     private void handlePayment() {
-        String userCode = paymentCodeField.getText();
-        String generatedCode = bramkaPlatnosci.getKodFlik();
+        String licensePlate = licensePlateField.getText().trim();
 
-        if (delayMinutes > 0 && userCode.equals(generatedCode)) {
-            confirmationLabel.setText("Płatność za " + (delayMinutes * ratePerMinute) + " zł zakończona sukcesem!");
-            confirmationLabel.setVisible(true);
-            errorLabel.setVisible(false);
-
-            System.out.println("Zapłacono za przekroczony czas parkowania.");
-        } else if (!userCode.equals(generatedCode)) {
-            errorLabel.setText("Niepoprawny kod płatności.");
-            errorLabel.setVisible(true);
-            confirmationLabel.setVisible(false);
-        } else {
-            errorLabel.setText("Brak opłat do uiszczenia.");
-            errorLabel.setVisible(true);
-            confirmationLabel.setVisible(false);
+        if (licensePlate.isEmpty()) {
+            showAlert("Błąd", "Numer rejestracyjny nie może być pusty.");
+            return;
         }
+
+        Samochod samochod = findCarByLicensePlate(licensePlate);
+
+        if (samochod == null) {
+            showAlert("Błąd", "Samochód o podanym numerze rejestracyjnym nie został znaleziony.");
+            return;
+        }
+
+        if (adminController == null) {
+            showAlert("Błąd", "AdminController nie został poprawnie ustawiony.");
+            return;
+        }
+
+        double naleznosc = calculatePayment(samochod);
+        samochod.setRachunek(naleznosc);
+
+        samochod.opuscParking();
+
+        paymentAmountLabel.setText("Kwota do zapłaty: " + String.format("%.2f", naleznosc) + " PLN");
+
+        adminController.refreshTable();
+        adminController.synchronizujDaneParkingowe();
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private double calculatePayment(Samochod samochod) {
+        double czasParkowania = samochod.getTimeRemaining();
+        double stawkaZaMinute = 0.5;
+        return Math.abs(czasParkowania) * stawkaZaMinute;
     }
 }

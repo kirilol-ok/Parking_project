@@ -18,7 +18,13 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 600, 600);
         LoginController loginController = fxmlLoader.getController(); // Получаем контроллер после load()
 
+        FXMLLoader paymentLoader = new FXMLLoader(getClass().getResource("payment-window.fxml"));
+        Scene paymentScene = new Scene(paymentLoader.load());
+        PaymentController paymentController = paymentLoader.getController();
+        paymentController.setAdminController(adminController);
+
         loginController.setAdminController(adminController);
+        paymentController.setAdminController(adminController);
 
         stage.setTitle("Logging window");
         stage.setScene(scene);
