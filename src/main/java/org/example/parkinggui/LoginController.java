@@ -5,17 +5,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
+import org.example.parkinggui.symulator.EmpDatabase;
 import org.example.parkinggui.symulator.Parking;
 import org.example.parkinggui.symulator.Samochod;
-import org.example.parkinggui.symulator.EmpDatabase;
+
+import java.io.IOException;
 
 public class LoginController {
+
     private AdminController adminController;
+
     public void setAdminController(AdminController adminController) {
         this.adminController = adminController;
     }
-
 
     Parking parking = new Parking();
 
@@ -35,9 +37,6 @@ public class LoginController {
     private Label errorLabel;
 
     @FXML
-    private TextField usernameField;
-
-    @FXML
     private PasswordField passwordField;
 
     @FXML
@@ -53,8 +52,6 @@ public class LoginController {
     }
 
     private void handleBuyTicket() {
-        Samochod samochod = new Samochod();
-
         String licensePlate = licensePlateTextField.getText();
         String duration = durationComboBox.getValue();
 
@@ -62,47 +59,50 @@ public class LoginController {
             errorLabel.setText("Proszę podać numer rejestracyjny.");
             errorLabel.setVisible(true);
             confirmationLabel.setVisible(false);
-        } else if (duration == null) {
+            return;
+        }
+
+        if (duration == null) {
             errorLabel.setText("Proszę wybrać czas parkowania.");
             errorLabel.setVisible(true);
             confirmationLabel.setVisible(false);
-        } else {
+            return;
+        }
+
+        int czasParkowania = extractNumberFromString(duration) * 60;
+        System.out.println("Czas parkowania (minuty): " + czasParkowania); // Debug
+
+        // zajmiuje miejsce
+        int[] miejsce = parking.zajmijMiejsce(licensePlate, czasParkowania);
+        if (miejsce != null) { // jesli dane miejsca sa poprawne
+            adminController.zaktualizujMiejsce(miejsce[0], miejsce[1], licensePlate, czasParkowania);
             confirmationLabel.setText("Bilet zakupiony na " + duration + " dla samochodu: " + licensePlate);
             confirmationLabel.setVisible(true);
             errorLabel.setVisible(false);
-
-            samochod.setNrRejestracyjny(licensePlate);
-            samochod.setTimeRemaining(extractNumberFromString(duration));
-            for(int i = 1; i < parking.getDatabase().size(); i++){
-                Object[] row = parking.getDatabase().get(i);
-                if (row[2].equals(true)) {
-                    samochod.setNrRzedu((Integer) row[0]);
-                    samochod.setNrMiejsca((Integer) row[0]);
-                }
-            }
-        }
-        if (adminController == null) { //test
-            System.out.println("Ошибка: adminController равен null.");
-        } else if (adminController.getSamochody() == null) {
-            System.out.println("Ошибка: список samochody равен null.");
         } else {
-            adminController.getSamochody().add(samochod);
-            adminController.refreshTable();
-            System.out.println("Машина добавлена: " + samochod.getNrRejestracyjny());
-            System.out.println("Текущий список: " + adminController.getSamochody());
+            errorLabel.setText("Brak wolnych miejsc.");
+            errorLabel.setVisible(true);
+            confirmationLabel.setVisible(false);
         }
     }
 
-    //wejscie do systemu admin z kluczem
+    // Wejście do systemu admin z kluczem
     private void handleLogin() {
         String password = passwordField.getText();
         EmpDatabase empDatabase = new EmpDatabase();
         boolean isLoggedIn = false;
 
+        if (adminController == null) {
+            loginErrorLabel.setText("AdminController nie został poprawnie ustawiony.");
+            loginErrorLabel.setVisible(true);
+            return;
+        }
+
         for (int i = 0; i < empDatabase.getEmpDatabase().size(); i++) {
             Object[] row = empDatabase.getEmpDatabase().get(i);
             if (row[3].equals(password)) {
                 openAdminWindow();
+                adminController.setParking(parking);
                 isLoggedIn = true;
                 break;
             }
@@ -113,7 +113,6 @@ public class LoginController {
             loginErrorLabel.setVisible(true);
         }
     }
-
 
     private void openAdminWindow() {
         try {
@@ -127,8 +126,8 @@ public class LoginController {
 
             stage.show();
 
-            Stage currentStage = (Stage) loginButton.getScene().getWindow();
-            currentStage.close();
+            // Stage currentStage = (Stage) loginButton.getScene().getWindow(); login-window zamyka sie po zalogowaniu admina
+            // currentStage.close();
         } catch (Exception e) {
             e.printStackTrace();
             loginErrorLabel.setText("Błąd podczas otwierania panelu administratora.");
@@ -136,11 +135,9 @@ public class LoginController {
         }
     }
 
-
-
     private int extractNumberFromString(String input) {
         String number = input.replaceAll("[^0-9]", "");
-        return number.isEmpty() ? 0 : Integer.parseInt(number); //wyciaga liczby z textu
+        return number.isEmpty() ? 0 : Integer.parseInt(number);
     }
 
     public static void main(String[] args) {

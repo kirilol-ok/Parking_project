@@ -18,14 +18,30 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 600, 600);
         LoginController loginController = fxmlLoader.getController(); // Получаем контроллер после load()
 
-        loginController.setAdminController(adminController);
+        FXMLLoader paymentLoader = new FXMLLoader(getClass().getResource("payment-window.fxml"));
+        Scene paymentScene = new Scene(paymentLoader.load());
+        PaymentController paymentController = paymentLoader.getController();
+        paymentController.setAdminController(adminController);
 
-        stage.setTitle("Logging window");
+        loginController.setAdminController(adminController);
+        paymentController.setAdminController(adminController);
+
+        stage.setTitle("Okno Logowania");
         stage.setScene(scene);
         stage.show();
     }
 
-    public static void main(String[] args) {
-        launch();
-    }
+
+    public void openAdminWindow() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("admin-window.fxml"));
+        Scene adminScene = new Scene(loader.load());
+        AdminController adminController = loader.getController();
+
+        Stage adminStage = new Stage();
+        adminStage.setTitle("Panel Administratora");
+        adminStage.setScene(adminScene);
+        adminStage.show();
+}
+
+    public static void main(String[] args) { launch(); }
 }

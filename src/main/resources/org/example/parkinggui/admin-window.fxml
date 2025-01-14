@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.example.parkinggui.AdminController"
-            prefHeight="600.0" prefWidth="800.0">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.parkinggui.AdminController">
     <children>
-        <VBox alignment="TOP_CENTER" spacing="10.0" layoutX="20.0" layoutY="10.0" prefWidth="760.0">
+        <VBox alignment="TOP_CENTER" layoutX="20.0" layoutY="10.0" prefWidth="760.0" spacing="10.0">
             <children>
-                <Label text="Stan parkingu" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Stan parkingu" />
                 <TableView fx:id="parkingTable" prefHeight="500.0" prefWidth="740.0">
                     <columns>
-                        <TableColumn text="Rząd" fx:id="rowColumn" prefWidth="100.0" />
-                        <TableColumn text="Numer miejsca" fx:id="spotColumn" prefWidth="150.0" />
-                        <TableColumn text="Status" fx:id="statusColumn" prefWidth="150.0" />
-                        <TableColumn text="Nr rejestracyjny" fx:id="licenseColumn" prefWidth="180.0" />
-                        <TableColumn text="Pozostały czas" fx:id="timeLeftColumn" prefWidth="160.0" />
+                        <TableColumn fx:id="rowColumn" prefWidth="100.0" text="Rząd" />
+                        <TableColumn fx:id="spotColumn" prefWidth="150.0" text="Numer miejsca" />
+                        <TableColumn fx:id="statusColumn" prefWidth="150.0" text="Status" />
+                        <TableColumn fx:id="licenseColumn" prefWidth="184.0" text="Nr rejestracyjny" />
+                        <TableColumn fx:id="timeLeftColumn" prefWidth="173.0" text="Pozostały czas" />
                     </columns>
                 </TableView>
-                <Button text="Odśwież" fx:id="refreshButton" prefWidth="150.0" />
+                <Button fx:id="leaveButton" prefWidth="150.0" text="Opuszczenie miejsca" />
             </children>
         </VBox>
     </children>
 </AnchorPane>
-
