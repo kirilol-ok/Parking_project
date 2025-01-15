@@ -10,6 +10,7 @@ import org.example.parkinggui.symulator.Parking;
 import org.example.parkinggui.symulator.Samochod;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class LoginController {
 
@@ -60,6 +61,11 @@ public class LoginController {
             errorLabel.setVisible(true);
             confirmationLabel.setVisible(false);
             return;
+        } else if (licensePlate.length() > 8) {
+            errorLabel.setText("Nieprawidłowy numer rejestracyjny.");
+            errorLabel.setVisible(true);
+            confirmationLabel.setVisible(false);
+            return;
         }
 
         if (duration == null) {
@@ -69,13 +75,32 @@ public class LoginController {
             return;
         }
 
+        // mapa zaproponowana przez chat, na pewno lepsze niz if else
+        Map<String, Double> pricingMap = Map.of(
+                "1 godzina", 12.0,
+                "2 godziny", 20.0,
+                "6 godzin", 35.0,
+                "12 godzin", 50.0,
+                "24 godziny", 90.0,
+                "168 godzin (tydzień)", 600.0
+        );
+
+        Double price = pricingMap.get(duration);
+        if (price == null) {
+            errorLabel.setText("Nieprawidłowy czas parkowania.");
+            errorLabel.setVisible(true);
+            confirmationLabel.setVisible(false);
+            return;
+        }
+
         int czasParkowania = extractNumberFromString(duration) * 60;
+        Samochod samochod = new Samochod(0, 0, licensePlate, czasParkowania, price); // obiekt Samochod z rachunkiem
         System.out.println("Czas parkowania (minuty): " + czasParkowania); // Debug
 
         // zajmiuje miejsce
-        int[] miejsce = parking.zajmijMiejsce(licensePlate, czasParkowania);
+        int[] miejsce = parking.zajmijMiejsce(licensePlate, czasParkowania, price);
         if (miejsce != null) { // jesli dane miejsca sa poprawne
-            adminController.zaktualizujMiejsce(miejsce[0], miejsce[1], licensePlate, czasParkowania);
+            adminController.zaktualizujMiejsce(miejsce[0], miejsce[1], licensePlate, czasParkowania, price);
             confirmationLabel.setText("Bilet zakupiony na " + duration + " dla samochodu: " + licensePlate);
             confirmationLabel.setVisible(true);
             errorLabel.setVisible(false);

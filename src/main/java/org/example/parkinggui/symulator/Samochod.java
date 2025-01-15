@@ -17,9 +17,9 @@ public class Samochod {
     private boolean zajete;
     public String status;
 
-    public Samochod(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double timeRemaining) {
+    public Samochod(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double timeRemaining, double price) {
         this.nrRejestracyjny = new SimpleStringProperty(nrRejestracyjny);
-        this.rachunek = new SimpleDoubleProperty(0);
+        this.rachunek = new SimpleDoubleProperty(price);
         this.dlug = new SimpleDoubleProperty(0);
         this.timeRemaining = new SimpleDoubleProperty(timeRemaining);
         this.nrMiejsca = new SimpleIntegerProperty(nrMiejsca);
@@ -55,6 +55,8 @@ public class Samochod {
     public double getDlug() {
         return dlug.get();
     }
+
+    public void setDlug(double dlug) { this.dlug.set(dlug); }
 
     public double getTimeRemaining() {
         return timeRemaining.get();
@@ -98,6 +100,12 @@ public class Samochod {
 
     public boolean isZajete() {
         return zajete;
+    }
+
+    public void calculateFine() {
+        if (timeRemaining.get() < 0) {
+            dlug.set(dlug.get() + 1);
+        }
     }
 
     public void opuscParking() {
