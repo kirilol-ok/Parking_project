@@ -12,11 +12,11 @@ public class Parking {
         parkingData = new Samochod[iloscRzedow][iloscMiejscWRzedzie];
     }
 
-    public int[] zajmijMiejsce(String nrRejestracyjny, int czasParkowania) {
+    public int[] zajmijMiejsce(String nrRejestracyjny, int czasParkowania, double price) {
         for (int i = 0; i < iloscRzedow; i++) {
             for (int j = 0; j < iloscMiejscWRzedzie; j++) {
                 if (parkingData[i][j] == null) { // znaleziono wolne miejsce
-                    parkingData[i][j] = new Samochod(i + 1, j + 1, nrRejestracyjny, czasParkowania);
+                    parkingData[i][j] = new Samochod(i + 1, j + 1, nrRejestracyjny, czasParkowania, price);
                     return new int[]{i + 1, j + 1}; // zwraca rząd i miejsce
                 }
             }
@@ -41,7 +41,7 @@ public class Parking {
         for (int i = 0; i < iloscRzedow; i++) {
             for (int j = 0; j < iloscMiejscWRzedzie; j++) {
                 if (parkingData[i][j] == null) {
-                    wolne.add(new Samochod(i + 1, j + 1, "", 0)); // Puste miejsce
+                    wolne.add(new Samochod(i + 1, j + 1, "", 0, 0)); // Puste miejsce
                 }
             }
         }
