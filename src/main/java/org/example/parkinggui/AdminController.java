@@ -40,23 +40,7 @@ public class AdminController {
     private TableColumn<Samochod, String> licensePlateColumn;
 
     @FXML
-    private TableColumn<Samochod, Double> remainingTimeColumn;
-
-    @FXML
-    private Button refreshButton;
-
-
-    @FXML
-    private TextField licensePlateCheckTextField;
-
-    @FXML
     private TableColumn<Samochod, Double> amountDueColumn;
-
-    @FXML
-    private Label remainingTimeLabel;
-
-    @FXML
-    private Label amountDueLabel;
 
     @FXML
     private Button leaveButton;
@@ -84,31 +68,8 @@ public class AdminController {
         leaveButton.setOnAction(event -> handleLeave());
     }
 
-    private double calculateAmountDue(Samochod samochod) {
-        double baseRate = 2.0; // example rate per hour
-        double timeParked = samochod.getTimeRemaining();
-        return Math.max(0, (timeParked / 60) * baseRate);
-    }
-
-    public void addSamochod(Samochod samochod) {
-        samochody.add(samochod);
-        refreshTable();
-    }
-
     public ObservableList<Samochod> getSamochody() {
         return samochody;
-    }
-
-    public void ustawWolneMiejsca() {
-        samochody.clear();
-        int iloscRzedow = 3;
-        int iloscMiejscWRzedzie = 5;
-        for (int i = 1; i <= iloscRzedow; i++) {
-            for (int j = 1; j <= iloscMiejscWRzedzie; j++) {
-                samochody.add(new Samochod(i, j, "", 0, 0));
-            }
-        }
-        refreshTable();
     }
 
     public void zaktualizujMiejsce(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double czasPozostaly, double price) {
@@ -173,15 +134,6 @@ public class AdminController {
             alert.showAndWait();
         }
     }
-
-    private void handleSamochodLeaving(Samochod selectedSamochod) {
-        if (selectedSamochod != null) {
-            selectedSamochod.opuscParking();
-            parkingTable.refresh();
-            System.out.println("Samochód z miejsca " + selectedSamochod.getNrRzedu() + "-" + selectedSamochod.getNrMiejsca() + " opuścił parking.");
-        }
-    }
-
 
     private String formatTime(double timeInMinutes) {
         int totalMinutes = (int) timeInMinutes; // zaokraglenie
