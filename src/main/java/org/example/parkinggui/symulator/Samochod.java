@@ -17,9 +17,9 @@ public class Samochod {
     private boolean zajete;
     public String status;
 
-    public Samochod(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double timeRemaining) {
+    public Samochod(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double timeRemaining, double price) {
         this.nrRejestracyjny = new SimpleStringProperty(nrRejestracyjny);
-        this.rachunek = new SimpleDoubleProperty(0);
+        this.rachunek = new SimpleDoubleProperty(price);
         this.dlug = new SimpleDoubleProperty(0);
         this.timeRemaining = new SimpleDoubleProperty(timeRemaining);
         this.nrMiejsca = new SimpleIntegerProperty(nrMiejsca);
@@ -56,6 +56,7 @@ public class Samochod {
         return dlug.get();
     }
 
+
     public double getTimeRemaining() {
         return timeRemaining.get();
     }
@@ -64,40 +65,24 @@ public class Samochod {
         this.timeRemaining.set(timeRemaining);
     }
 
-    public DoubleProperty timeRemainingProperty() {
-        return timeRemaining;
-    }
 
     public int getNrMiejsca() {
         return nrMiejsca.get();
     }
 
-    public void setNrMiejsca(int nrMiejsca) {
-        this.nrMiejsca.set(nrMiejsca);
-    }
-
-    public SimpleIntegerProperty nrMiejscaProperty() {
-        return nrMiejsca;
-    }
 
     public int getNrRzedu() {
         return nrRzedu.get();
     }
 
-    public void setNrRzedu(int nrRzedu) {
-        this.nrRzedu.set(nrRzedu);
-    }
-
-    public SimpleIntegerProperty nrRzeduProperty() {
-        return nrRzedu;
-    }
-
-    public int getTimeOverdue() {
-        return (int) Math.max(0, -timeRemaining.get()); // zwraca spoznienie jeśli czas na minusie
-    }
-
     public boolean isZajete() {
         return zajete;
+    }
+
+    public void calculateFine() {
+        if (timeRemaining.get() < 0) {
+            dlug.set(dlug.get() + 1);
+        }
     }
 
     public void opuscParking() {

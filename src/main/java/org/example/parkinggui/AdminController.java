@@ -40,23 +40,7 @@ public class AdminController {
     private TableColumn<Samochod, String> licensePlateColumn;
 
     @FXML
-    private TableColumn<Samochod, Double> remainingTimeColumn;
-
-    @FXML
-    private Button refreshButton;
-
-
-    @FXML
-    private TextField licensePlateCheckTextField;
-
-    @FXML
-    private Button checkDetailsButton;
-
-    @FXML
-    private Label remainingTimeLabel;
-
-    @FXML
-    private Label amountDueLabel;
+    private TableColumn<Samochod, Double> amountDueColumn;
 
     @FXML
     private Button leaveButton;
@@ -68,11 +52,12 @@ public class AdminController {
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTimeRemaining() > 0 ? "Zajęte" : "Wolne"));
         licenseColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNrRejestracyjny()));
         timeLeftColumn.setCellValueFactory(data -> new SimpleStringProperty(formatTime(data.getValue().getTimeRemaining())));
+        amountDueColumn.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getRachunek()));
 
         // 15 wolnych miejsc
         for (int i = 1; i <= 3; i++) {
             for (int j = 1; j <= 5; j++) {
-                samochody.add(new Samochod(i, j, "", 0)); // Rząd, miejsce, brak rejestracji, czas = 0
+                samochody.add(new Samochod(i, j, "", 0, 0)); // Rząd, miejsce, brak rejestracji, czas = 0
             }
         }
 
@@ -83,38 +68,16 @@ public class AdminController {
         leaveButton.setOnAction(event -> handleLeave());
     }
 
-    private double calculateAmountDue(Samochod samochod) {
-        double baseRate = 2.0; // example rate per hour
-        double timeParked = samochod.getTimeRemaining();
-        return Math.max(0, (timeParked / 60) * baseRate);
-    }
-
-    public void addSamochod(Samochod samochod) {
-        samochody.add(samochod);
-        refreshTable();
-    }
-
     public ObservableList<Samochod> getSamochody() {
         return samochody;
     }
 
-    public void ustawWolneMiejsca() {
-        samochody.clear();
-        int iloscRzedow = 3;
-        int iloscMiejscWRzedzie = 5;
-        for (int i = 1; i <= iloscRzedow; i++) {
-            for (int j = 1; j <= iloscMiejscWRzedzie; j++) {
-                samochody.add(new Samochod(i, j, "", 0));
-            }
-        }
-        refreshTable();
-    }
-
-    public void zaktualizujMiejsce(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double czasPozostaly) {
+    public void zaktualizujMiejsce(int nrRzedu, int nrMiejsca, String nrRejestracyjny, double czasPozostaly, double price) {
         for (Samochod samochod : samochody) {
             if (samochod.getNrRzedu() == nrRzedu && samochod.getNrMiejsca() == nrMiejsca) {
                 samochod.setNrRejestracyjny(nrRejestracyjny);
                 samochod.setTimeRemaining(czasPozostaly);
+                samochod.setRachunek(price);
                 break; // znajdzie odpowiednie miejsce
             }
         }
@@ -130,6 +93,7 @@ public class AdminController {
 
     public void setParking(Parking parking) {
         this.parking = parking;
+        synchronizujDaneParkingowe();
     }
 
     private void startTimer() {
@@ -141,7 +105,9 @@ public class AdminController {
     private void updateTime() {
         for (Samochod samochod : samochody) {
             if (samochod.getTimeRemaining() > 0) {
-                samochod.setTimeRemaining(samochod.getTimeRemaining() - 1); // -1 min
+                samochod.setTimeRemaining(samochod.getTimeRemaining() - 1); // -1 minuta
+            } else if (samochod.getTimeRemaining() < 0) {
+                samochod.calculateFine();
             }
         }
         parkingTable.refresh();
@@ -149,28 +115,25 @@ public class AdminController {
 
     private void handleLeave() {
         Samochod selectedSamochod = parkingTable.getSelectionModel().getSelectedItem();
-        if (selectedSamochod != null) {
-            if (selectedSamochod.isZajete()) {
-                selectedSamochod.opuscParking();
-                parking.opuscParking(selectedSamochod.getNrRzedu() - 1, selectedSamochod.getNrMiejsca() - 1);
-                synchronizujDaneParkingowe(); // synchronizujemy dane po opuszczeniu parkingu
-                refreshTable();
-                System.out.println("Samochód z miejsca " + selectedSamochod.getNrRzedu() + "-" + selectedSamochod.getNrMiejsca() + " opuścił parking.");
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "To miejsce jest już wolne.", ButtonType.OK);
-                alert.showAndWait();
-            }
-        }
-    }
-
-    private void handleSamochodLeaving(Samochod selectedSamochod) {
-        if (selectedSamochod != null) {
+        if (selectedSamochod != null && selectedSamochod.isZajete()) {
+            double dlug = selectedSamochod.getDlug();
             selectedSamochod.opuscParking();
-            parkingTable.refresh();
-            System.out.println("Samochód z miejsca " + selectedSamochod.getNrRzedu() + "-" + selectedSamochod.getNrMiejsca() + " opuścił parking.");
+            parking.opuscParking(selectedSamochod.getNrRzedu() - 1, selectedSamochod.getNrMiejsca() - 1);
+            synchronizujDaneParkingowe(); // synchronizujemy dane po opuszczeniu parkingu
+            refreshTable();
+            if (selectedSamochod.getTimeRemaining() >= 0) {
+                System.out.println("Samochód z miejsca " + selectedSamochod.getNrRzedu() + "-" + selectedSamochod.getNrMiejsca() +
+                        " uiścił należność w wysokości " + selectedSamochod.getRachunek() + " zł i opuścił parking.");
+            } else {
+                System.out.println("Samochód z miejsca " + selectedSamochod.getNrRzedu() + "-" + selectedSamochod.getNrMiejsca() +
+                        " uiścił należność w wysokości " + selectedSamochod.getRachunek() + " zł + " + dlug + " zl kary za " +
+                        Math.abs(selectedSamochod.getTimeRemaining()) + " minut spoznienia" + " i opuścił parking.");;
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "To miejsce jest już wolne.", ButtonType.OK);
+            alert.showAndWait();
         }
     }
-
 
     private String formatTime(double timeInMinutes) {
         int totalMinutes = (int) timeInMinutes; // zaokraglenie
