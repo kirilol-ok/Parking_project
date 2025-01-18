@@ -1,28 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.example.parkinggui.PaymentController"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #454545;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.parkinggui.PaymentController">
     <children>
-        <VBox alignment="CENTER" spacing="20.0" layoutX="150.0" layoutY="50.0" prefWidth="300.0">
+        <VBox alignment="CENTER" layoutX="150.0" layoutY="50.0" prefHeight="80.0" prefWidth="300.0" spacing="20.0">
             <children>
-                <Label text="Wyjazd z parkingu" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
-                <Label text="Wprowadź numer rejestracyjny:" />
-                <TextField fx:id="licensePlateField" promptText="Wpisz numer rejestracyjny" />
-                <Button fx:id="checkDetailsButton" text="Sprawdź szczegóły" prefWidth="200.0" />
-                <Label text="Pozostały czas parkowania:" />
-                <Label fx:id="remainingTimeLabel" style="-fx-font-size: 14px;" />
-                <Label text="Kwota do zapłaty:" />
-                <Label fx:id="paymentAmountLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-                <Button fx:id="payButton" text="Zapłać i opuść parking" prefWidth="200.0" />
-                <Label fx:id="confirmationLabel" textFill="green" visible="false" />
-                <Label fx:id="errorLabel" textFill="red" visible="false" />
+                <Label prefHeight="58.0" prefWidth="219.0" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Applikacja Bankowa TKO" textFill="#fcfafa">
+               <font>
+                  <Font size="34.0" />
+               </font></Label>
+                <Label fx:id="codeLabel" textFill="#dcd2d2">
+               <font>
+                  <Font name="SansSerif Bold" size="30.0" />
+               </font>
+               <VBox.margin>
+                  <Insets top="50.0" />
+               </VBox.margin></Label>
+            <Separator prefWidth="200.0" style="-fx-background-color: red;" translateY="-20.0">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </Separator>
+            <Button fx:id="copyButton" mnemonicParsing="false" prefHeight="36.0" prefWidth="118.0" style="-fx-background-color: none;" text="Copijuj kod" textFill="#dcd5d5" translateY="-30.0" underline="true">
+               <padding>
+                  <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
+               </padding>
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Button>
+            <HBox>
+               <children>
+                  <Button fx:id="generateButton" mnemonicParsing="false" style="-fx-background-color: #8F3232; -fx-border-color: white;" text="Wegeneruj kod" textFill="#f7eded">
+                     <padding>
+                        <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
+                     </padding>
+                     <font>
+                        <Font name="SansSerif Regular" size="12.0" />
+                     </font>
+                  </Button>
+                  <Label fx:id="remainLabel" prefHeight="32.0" prefWidth="137.0" text="Ważny jeszcze:" textFill="WHITE">
+                     <HBox.margin>
+                        <Insets left="50.0" />
+                     </HBox.margin>
+                     <padding>
+                        <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </HBox>
             </children>
         </VBox>
     </children>

@@ -1,20 +1,29 @@
 package org.example.parkinggui;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
 import javafx.scene.control.*;
 import org.example.parkinggui.symulator.BramkaPlatnosci;
+import org.example.parkinggui.symulator.Listener;
 import org.example.parkinggui.symulator.Samochod;
 
-public class PaymentController {
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+
+public class PaymentController extends Thread implements Listener {
+
 
     @FXML
-    private TextField licensePlateField;
+    private javafx.scene.control.Label codeLabel;
+    @FXML
+    private javafx.scene.control.Label remainLabel;
 
     @FXML
-    private Label paymentAmountLabel;
-
+    private javafx.scene.control.Button copyButton;
     @FXML
-    private Button payButton;
+    private javafx.scene.control.Button generateButton;
 
     private AdminController adminController;
 
@@ -27,52 +36,66 @@ public class PaymentController {
         }
     }
 
+    private Samochod samochod;
+    private Thread timerThread;
+
+    public void setSamochod(Samochod samochod) {
+        this.samochod = samochod;
+    }
+
     @FXML
     public void initialize() {
-        payButton.setOnAction(event -> handlePayment());
+        copyButton.setOnAction(event -> handleCopyCode());
+        generateButton.setOnAction(event -> handleGenerateCode());
     }
 
-    private Samochod findCarByLicensePlate(String licensePlate) {
-        if (adminController != null && adminController.getSamochody() != null) {
-            return adminController.getSamochody()
-                    .stream()
-                    .filter(samochod -> licensePlate.equalsIgnoreCase(samochod.getNrRejestracyjny()))
-                    .findFirst()
-                    .orElse(null);
-        }
-        return null;
+    public void handleCopyCode() {
+        StringSelection stringSelection = new StringSelection(codeLabel.getText());
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
+        System.out.println("Текст скопирован в буфер обмена: " + codeLabel.getText());
     }
 
-    private void handlePayment() {
-        String licensePlate = licensePlateField.getText().trim();
+    public void handleGenerateCode() {
+        bramkaPlatnosci.resetCode();
+        String flikCode = bramkaPlatnosci.getCodeFlik();
+        codeLabel.setText(flikCode);
+        generateButton.setDisable(true);
 
-        if (licensePlate.isEmpty()) {
-            showAlert("Błąd", "Numer rejestracyjny nie może być pusty.");
-            return;
+        if (adminController != null && samochod != null) {
+            adminController.renewCodeFlik(samochod.getNrRejestracyjny(), flikCode);
         }
 
-        Samochod samochod = findCarByLicensePlate(licensePlate);
+        new Thread(() -> {
+            int timeLeft = 40;
+            while (timeLeft > 0) {
+                samochod.notifyListeners();
+                int finalTimeLeft = timeLeft;
+                javafx.application.Platform.runLater(() ->
+                        remainLabel.setText("Ważny jeszcze: " + finalTimeLeft + " sec")
+                );
 
-        if (samochod == null) {
-            showAlert("Błąd", "Samochód o podanym numerze rejestracyjnym nie został znaleziony.");
-            return;
-        }
+                timeLeft--;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-        if (adminController == null) {
-            showAlert("Błąd", "AdminController nie został poprawnie ustawiony.");
-            return;
-        }
+            bramkaPlatnosci.resetCode();
+            if (adminController != null && samochod != null) {
+                adminController.renewCodeFlik(samochod.getNrRejestracyjny(), ""); // Очищаем код в таблице
+            }
 
-        double naleznosc = calculatePayment(samochod);
-        samochod.setRachunek(naleznosc);
-
-        samochod.opuscParking();
-
-        paymentAmountLabel.setText("Kwota do zapłaty: " + String.format("%.2f", naleznosc) + " PLN");
-
-        adminController.refreshTable();
-        adminController.synchronizujDaneParkingowe();
+            javafx.application.Platform.runLater(() -> {
+                codeLabel.setText("");
+                remainLabel.setText("Wygeneruj ponownie");
+                generateButton.setDisable(false);
+            });
+        }).start();
     }
+
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -82,9 +105,19 @@ public class PaymentController {
         alert.showAndWait();
     }
 
-    private double calculatePayment(Samochod samochod) {
-        double czasParkowania = samochod.getTimeRemaining();
-        double stawkaZaMinute = 0.5;
-        return Math.abs(czasParkowania) * stawkaZaMinute;
+    @Override
+    public void update() {
+        if (samochod == null) {
+            javafx.application.Platform.runLater(this::closeWindow);
+        } else {
+            adminController.refreshTable();
+            adminController.synchronizujDaneParkingowe();
+        }
     }
+
+    public void closeWindow() {
+        Stage stage = (Stage) codeLabel.getScene().getWindow();
+        stage.close();
+    }
+
 }

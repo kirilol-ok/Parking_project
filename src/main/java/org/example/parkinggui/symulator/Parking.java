@@ -12,7 +12,7 @@ public class Parking {
         parkingData = new Samochod[iloscRzedow][iloscMiejscWRzedzie];
     }
 
-    public int[] zajmijMiejsce(String nrRejestracyjny, int czasParkowania, double price) {
+    public int[] reserveSpot(String nrRejestracyjny, int czasParkowania, double price) {
         for (int i = 0; i < iloscRzedow; i++) {
             for (int j = 0; j < iloscMiejscWRzedzie; j++) {
                 if (parkingData[i][j] == null) { // znaleziono wolne miejsce
@@ -24,7 +24,7 @@ public class Parking {
         return null; // brak wolnych miejsc
     }
 
-    public ArrayList<Samochod> getZajeteMiejsca() {
+    public ArrayList<Samochod> getReservedSpots() {
         ArrayList<Samochod> zajete = new ArrayList<>();
         for (int i = 0; i < iloscRzedow; i++) {
             for (int j = 0; j < iloscMiejscWRzedzie; j++) {
@@ -36,7 +36,7 @@ public class Parking {
         return zajete;
     }
 
-    public ArrayList<Samochod> getWolneMiejsca() {
+    public ArrayList<Samochod> getFreeSpots() {
         ArrayList<Samochod> wolne = new ArrayList<>();
         for (int i = 0; i < iloscRzedow; i++) {
             for (int j = 0; j < iloscMiejscWRzedzie; j++) {
@@ -48,9 +48,29 @@ public class Parking {
         return wolne;
     }
 
-    public void opuscParking(int rzad, int miejsce) {
+    public void leaveParking(int rzad, int miejsce) {
         if (parkingData[rzad][miejsce] != null) {
             parkingData[rzad][miejsce] = null;
         }
+    }
+
+    public int getIloscRzedow() {
+        return iloscRzedow;
+    }
+
+    public int getIloscMiejscWRzedzie() {
+        return iloscMiejscWRzedzie;
+    }
+
+    public ArrayList<String> getLicensePlates() {
+        ArrayList<String> licensePlates = new ArrayList<>();
+        for (int i = 0; i < iloscRzedow; i++) {
+            for (int j = 0; j < iloscMiejscWRzedzie; j++) {
+                if (parkingData[i][j] != null && parkingData[i][j].getNrRejestracyjny() != null) {
+                    licensePlates.add(parkingData[i][j].getNrRejestracyjny().toUpperCase().replaceAll("\\s+", ""));
+                }
+            }
+        }
+        return licensePlates;
     }
 }
