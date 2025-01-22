@@ -37,7 +37,6 @@ public class PaymentController extends Thread implements Listener {
     }
 
     private Samochod samochod;
-    private Thread timerThread;
 
     public void setSamochod(Samochod samochod) {
         this.samochod = samochod;
@@ -85,7 +84,7 @@ public class PaymentController extends Thread implements Listener {
 
             bramkaPlatnosci.resetCode();
             if (adminController != null && samochod != null) {
-                adminController.renewCodeFlik(samochod.getNrRejestracyjny(), ""); // Очищаем код в таблице
+                adminController.renewCodeFlik(samochod.getNrRejestracyjny(), "");
             }
 
             javafx.application.Platform.runLater(() -> {
