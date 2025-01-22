@@ -36,5 +36,6 @@ W IDE: Skorzystaj z klasy głównej projektu.
 
 W terminalu: Uruchom java z odpowiednimi argumentami dla JavaFX.
 
-Autorzy:
+
+# Autorzy:
 Bartłomiej Bieda, Kiryl Baranouski
